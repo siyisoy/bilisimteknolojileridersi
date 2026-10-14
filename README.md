@@ -2,18 +2,18 @@
 
 Bu depo, Bilişim Teknolojileri dersi kapsamında hazırladığım sunum dosyalarını içermektedir.
 
-📚 İçerik
+## 📚 İçerik
 
 Bu depoda ders kapsamında ele alınan konulara yönelik sunum dosyaları ve ilgili materyaller yer almaktadır.
 
 Ders konularına ilişkin sunumlar
 Eğitim amaçlı dokümanlar
 Konuları destekleyen ek materyaller
-🎯 Amaç
+## 🎯 Amaç
 
 Bu deponun amacı, ders kapsamında hazırlanan sunumları düzenli bir şekilde saklamak, kolayca erişilebilir hâle getirmek ve gerektiğinde paylaşmaktır.
 
-📁 Dosya Yapısı
+## 📁 Dosya Yapısı
 
 Sunum dosyaları, konularına göre düzenlenerek bu depo içerisinde tutulacaktır.
 
@@ -26,10 +26,10 @@ Sunum dosyaları, konularına göre düzenlenerek bu depo içerisinde tutulacakt
 
 Not: Yukarıdaki dosya yapısı örnektir; gerçek dosyalar eklendikçe güncellenecektir.
 
-🛠️ Kullanım
+## 🛠️ Kullanım
 
 Sunum dosyalarını görüntülemek veya indirmek için depodaki ilgili dosyaya tıklayabilirsiniz.
 
-📌 Not
+## 📌 Not
 
 Bu depo, Bilişim Teknolojileri dersi için hazırlanmış eğitim materyallerini bir arada tutmak amacıyla oluşturulmuştur.
