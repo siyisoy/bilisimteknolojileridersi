@@ -1,4 +1,4 @@
-# Bilişim Teknolojileri Sunumları
+# Bilişim Teknolojileri Dersi Sunum Dosyaları
 
 Bu depo, Bilişim Teknolojileri dersi kapsamında hazırladığım sunum dosyalarını içermektedir.
 
