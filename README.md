@@ -17,11 +17,11 @@ Bu deponun amacı, ders kapsamında hazırlanan sunumları düzenli bir şekilde
 
 Sunum dosyaları, konularına göre düzenlenerek bu depo içerisinde tutulacaktır.
 
-.
-├── README.md
-└── sunumlar/
-    ├── hafta_1.html
-    └── hafta-2.html
+- .
+- ├── README.md
+- └── sunumlar/
+-      ├── hafta_1.html
+-      └── hafta-2.html
 
 
 Not: Yukarıdaki dosya yapısı örnektir; gerçek dosyalar eklendikçe güncellenecektir.
