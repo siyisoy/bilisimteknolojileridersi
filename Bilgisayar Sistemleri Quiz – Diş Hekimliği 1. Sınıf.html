@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Bilgisayar Sistemleri Quiz – Diş Hekimliği 1. Sınıf</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap');
+
+  :root {
+    --bg: #0f1823;
+    --surface: #162030;
+    --card: #1d2e42;
+    --border: #2a3f58;
+    --accent: #38bdf8;
+    --accent2: #6366f1;
+    --correct: #34d399;
+    --wrong: #f87171;
+    --text: #e2eaf4;
+    --muted: #7a9ab8;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-left h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(15px, 2vw, 20px);
+    color: var(--accent);
+    letter-spacing: -0.3px;
+  }
+
+  .header-left p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .score-display {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 18px;
+  }
+
+  .score-display span { color: var(--text); font-weight: 600; }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    min-width: 52px;
+    text-align: right;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .q-num {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 7px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .q-text {
+    font-size: clamp(16px, 2vw, 18px);
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    font: 15px/1.45 'Inter', sans-serif;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: #1a2f47;
+  }
+
+  .opt-btn .opt-letter {
+    background: var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 7px;
+    min-width: 26px;
+    text-align: center;
+    margin-top: 1px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .opt-btn.selected { border-color: var(--accent2); background: #1e2a4a; }
+  .opt-btn.selected .opt-letter { background: var(--accent2); color: #fff; }
+
+  .opt-btn.correct { border-color: var(--correct); background: #0d2a1f; }
+  .opt-btn.correct .opt-letter { background: var(--correct); color: #0a1f14; }
+
+  .opt-btn.wrong { border-color: var(--wrong); background: #2a1313; }
+  .opt-btn.wrong .opt-letter { background: var(--wrong); color: #1a0a0a; }
+
+  .opt-btn:disabled { cursor: default; }
+
+  .feedback-box {
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+    margin-bottom: 20px;
+  }
+
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: #0d2a1f; border: 1px solid var(--correct); color: #6ee7b7; }
+  .feedback-box.wrong-fb { background: #2a1313; border: 1px solid var(--wrong); color: #fca5a5; }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font: 600 15px 'Inter', sans-serif;
+    padding: 11px 24px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+  .skip-btn {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font: 14px 'Inter', sans-serif;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .skip-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Results screen */
+  #results-screen {
+    display: none;
+    text-align: center;
+  }
+
+  .results-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  .score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 0%, var(--accent2) var(--pct, 0%), var(--border) var(--pct, 0%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-family: 'Sora', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    position: relative;
+  }
+
+  .score-circle::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: var(--card);
+    border-radius: 50%;
+  }
+
+  .score-circle span { position: relative; z-index: 1; }
+
+  .results-card h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .results-card p { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 28px 0;
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 8px;
+  }
+
+  .stat-box .val {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .stat-box .lbl { font-size: 12px; color: var(--muted); }
+  .stat-box .val.green { color: var(--correct); }
+  .stat-box .val.red { color: var(--wrong); }
+  .stat-box .val.blue { color: var(--accent); }
+
+  .restart-btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font: 600 16px 'Sora', sans-serif;
+    padding: 14px 36px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .restart-btn:hover { opacity: 0.88; }
+
+  @media (max-width: 560px) {
+    main { padding: 24px 16px 80px; }
+    .question-card { padding: 20px 16px; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    header { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Bilgisayar Sistemleri Quiz</h1>
+    <p>Diş Hekimliği 1. Sınıf &nbsp;·&nbsp; 50 Soru</p>
+  </div>
+  <div class="score-display">
+    Doğru: <span id="hdr-correct">0</span> &nbsp;|&nbsp; Yanlış: <span id="hdr-wrong">0</span>
+  </div>
+</header>
+
+<main>
+  <!-- Quiz screen -->
+  <div id="quiz-screen">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:2%"></div></div>
+      <div class="progress-label" id="prog-label">1 / 50</div>
+    </div>
+
+    <div class="question-card" id="q-card">
+      <div class="q-header">
+        <div class="q-num" id="q-num">S 1</div>
+        <div class="q-text" id="q-text"></div>
+      </div>
+      <div class="options" id="options"></div>
+      <div class="feedback-box" id="feedback"></div>
+      <div class="card-footer">
+        <button class="skip-btn" id="skip-btn">Atla →</button>
+        <button class="btn-primary" id="next-btn" disabled>Sonraki Soru →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results screen -->
+  <div id="results-screen">
+    <div class="results-card">
+      <div class="score-circle" id="score-circle"><span id="score-pct">0%</span></div>
+      <h2 id="result-title">Quiz Tamamlandı!</h2>
+      <p id="result-msg"></p>
+      <div class="stats-row">
+        <div class="stat-box"><span class="val green" id="res-correct">0</span><span class="lbl">Doğru</span></div>
+        <div class="stat-box"><span class="val red" id="res-wrong">0</span><span class="lbl">Yanlış</span></div>
+        <div class="stat-box"><span class="val blue" id="res-skipped">0</span><span class="lbl">Atlanan</span></div>
+      </div>
+      <button class="restart-btn" onclick="restart()">Tekrar Başla</button>
+    </div>
+  </div>
+</main>
+
+<script>
+const QUESTIONS = [
+  // 1 — Donanım
+  {
+    q: "Bir bilgisayarda o anda çalışan programların geçici verileri ağırlıklı olarak nerede tutulur?",
+    opts: ["SSD/HDD gibi depolama birimi","RAM (geçici bellek)","Anakart","Güç kaynağı"],
+    ans: 1,
+    exp: "RAM, çalışan programların anlık verilerini tutar; SSD/HDD ise kalıcı dosya depolama birimidir."
+  },
+  {
+    q: "Kaydedilmiş bir diş hekimliği ödevi dosyası normalde hangi birimde saklanır?",
+    opts: ["RAM","CPU önbelleği","SSD veya HDD","Anakart çipi"],
+    ans: 2,
+    exp: "Kalıcı dosyalar SSD veya HDD gibi depolama birimlerinde tutulur; RAM yalnızca geçici çalışma alanıdır."
+  },
+  {
+    q: "Anakartın temel işlevi nedir?",
+    opts: ["Komutları yürütmek","Bileşenler arasındaki bağlantı altyapısını sağlamak","Dosyaları kalıcı olarak depolamak","Görüntüyü ekrana aktarmak"],
+    ans: 1,
+    exp: "Anakart; CPU, RAM, depolama ve diğer bileşenlerin birbirine bağlandığı merkezi altyapıdır."
+  },
+  {
+    q: "Daha büyük bir depolama birimi her zaman bilgisayarı daha hızlı yapar mı?",
+    opts: ["Evet, kapasite arttıkça hız da artar","Hayır; hız CPU, RAM, iş yükü ve depolama hızına birlikte bağlıdır","Evet, ancak yalnızca SSD kullanılırsa","Hayır, hız yalnızca CPU'ya bağlıdır"],
+    ans: 1,
+    exp: "Kapasite ile hız aynı şey değildir. Genel performans CPU, RAM miktarı, depolama hızı ve çalışan uygulamaların birleşimine bağlıdır."
+  },
+  {
+    q: "Aşağıdakilerden hangisi bir giriş/çıkış aygıtına örnektir?",
+    opts: ["RAM","CPU","Klavye ve fare","SSD"],
+    ans: 2,
+    exp: "Klavye ve fare giriş; ekran ve yazıcı ise çıkış aygıtlarıdır. CPU ve RAM giriş/çıkış bileşeni değildir."
+  },
+  // 6 — İşletim sistemi
+  {
+    q: "İşletim sisteminin temel görevi nedir?",
+    opts: ["Yalnızca internet bağlantısı sağlamak","İşlemci, bellek, dosya ve aygıt erişimini yönetmek","Doküman oluşturmak","Donanımı üretmek"],
+    ans: 1,
+    exp: "İşletim sistemi; donanım kaynaklarını (CPU, bellek, aygıtlar) yönetir ve uygulamaların çalışabileceği ortamı sağlar."
+  },
+  {
+    q: "Aşağıdakilerden hangisi 'çekirdek' (kernel) katmanının doğru açıklamasıdır?",
+    opts: ["Kullanıcının gördüğü grafik arayüz","İşletim sisteminin kaynakları yöneten temel bileşeni","Bir internet tarayıcısı","Bir ofis uygulaması"],
+    ans: 1,
+    exp: "Çekirdek, işletim sisteminin donanım kaynaklarını yöneten temel yazılım katmanıdır; kullanıcı arayüzünden bağımsızdır."
+  },
+  {
+    q: "LibreOffice Writer veya Microsoft Word hangi yazılım katmanında yer alır?",
+    opts: ["Donanım","Çekirdek (kernel)","Uygulama katmanı","Ağ protokolü"],
+    ans: 2,
+    exp: "Writer ve Word birer ofis uygulamasıdır; kullanıcı görevlerini yerine getiren uygulama katmanında çalışır."
+  },
+  {
+    q: "Masaüstü işletim sistemleri ile sunucu işletim sistemleri arasındaki temel fark nedir?",
+    opts: ["Sunucu sistemleri daha ucuzdur","Masaüstü sistemleri kişisel etkileşime, sunucu sistemleri diğer cihazlara hizmet sunmaya odaklanır","Masaüstü sistemleri daha güçlü işlemciye sahiptir","Sunucu sistemlerinde grafik arayüz zorunludur"],
+    ans: 1,
+    exp: "Masaüstü sistemleri bireysel kullanıcı etkileşimi için, sunucu sistemleri ise ağ üzerinden sürekli hizmet sunmak için tasarlanmıştır."
+  },
+  {
+    q: "Android işletim sisteminin altında hangi çekirdek kullanılır?",
+    opts: ["Windows NT","macOS Darwin","Linux çekirdeği","FreeBSD çekirdeği"],
+    ans: 2,
+    exp: "Android, Linux çekirdeğini temel alır; ancak bu, tüm masaüstü Linux uygulamalarının doğrudan çalışacağı anlamına gelmez."
+  },
+  // 11 — Sistem aileleri
+  {
+    q: "Android'de Linux çekirdeği bulunması, tüm masaüstü Linux uygulamalarının Android'de doğrudan çalıştığını kanıtlar mı?",
+    opts: ["Evet, aynı çekirdek kullanıldığı için çalışır","Hayır; kullanıcı alanı kütüphaneleri ve arayüzler birbirinden farklıdır","Evet, ancak yalnızca komut satırı uygulamaları için","Hayır, çünkü Android'in hiç çekirdeği yoktur"],
+    ans: 1,
+    exp: "Aynı çekirdek farklı kullanıcı alanı yazılım yığınlarını destekleyebilir. Android ve masaüstü Linux çok farklı uygulama ortamlarına sahiptir."
+  },
+  {
+    q: "macOS işletim sisteminin tarihsel kökeni hangi sistemle ilişkilidir?",
+    opts: ["Windows NT","Linux çekirdeği","BSD ve Mach bileşenleri","MS-DOS"],
+    ans: 2,
+    exp: "macOS/Darwin, BSD ve Mach mikroçekirdeği gibi bileşenlerle ilişkilidir; tamamen bağımsız bir UNIX türevidir."
+  },
+  {
+    q: "Bir Linux dağıtımı (distribution) nedir?",
+    opts: ["Yalnızca Linux çekirdeğinin kendisi","Çekirdek, araçlar, paket yöneticisi ve masaüstü gibi bileşenlerin birleşimi","Linux'un ücretli sürümü","Yalnızca sunucu için tasarlanmış bir sistem"],
+    ans: 1,
+    exp: "Ubuntu, Fedora, Debian gibi dağıtımlar; çekirdek ile birlikte araçlar, paket yöneticisi ve genellikle bir masaüstü ortamını bir arada sunar."
+  },
+  {
+    q: "Fedora dağıtımında KDE Plasma ne anlama gelir?",
+    opts: ["Fedora'nın başka bir adı","Fedora'nın içindeki masaüstü ortamı","Fedora'nın kurumsal sürümü","Bir Linux çekirdeği sürümü"],
+    ans: 1,
+    exp: "Fedora bir dağıtım, KDE Plasma ise o dağıtım üzerinde çalışan masaüstü ortamıdır. Masaüstü değişirse sistem ailesi değişmez."
+  },
+  {
+    q: "ChromeOS ve Chrome tarayıcısı arasındaki fark nedir?",
+    opts: ["İkisi de tamamen aynı şeydir","ChromeOS Chromebook'larda çalışan bir işletim sistemidir; Chrome ise farklı platformlarda çalışan tarayıcıdır","Chrome yalnızca ChromeOS'ta çalışır","ChromeOS Windows'un bir sürümüdür"],
+    ans: 1,
+    exp: "ChromeOS Google'ın Chromebook cihazlarına özgü web odaklı işletim sistemidir; Chrome tarayıcısı ise Windows, macOS ve Linux'ta da çalışır."
+  },
+  // 16 — Özel sistemler
+  {
+    q: "Gömülü sistem (embedded system) nedir?",
+    opts: ["İnternetin içinde çalışan bir sistem","Daha büyük bir ürünün içinde belirli görevleri yerine getiren bilgisayar sistemi","Yalnızca akıllı telefonlarda kullanılan sistem","Süper bilgisayar türü"],
+    ans: 1,
+    exp: "Gömülü sistem; bir cihazın (örneğin dijital röntgen cihazı, otoklav kontrol paneli) içinde tanımlı görevler için tasarlanmış bilgisayar sistemidir."
+  },
+  {
+    q: "RTOS (Gerçek Zamanlı İşletim Sistemi) nedir?",
+    opts: ["Yalnızca hızlı hesaplamalar yapan sistem","Gereken yanıtı belirlenmiş süre içinde öngörülebilir şekilde verebilen sistem","İnternete bağlı her işletim sistemi","Grafik arayüze sahip gömülü sistem"],
+    ans: 1,
+    exp: "RTOS'un odağı yalnızca hız değil, öngörülebilir zamanlama ve belirlenmiş süre sınırına uyabilme yeteneğidir."
+  },
+  {
+    q: "'Hard real-time' ve 'soft real-time' sistemler arasındaki fark nedir?",
+    opts: ["Hard real-time daha yavaştır","Hard real-time'da süre sınırını kaçırmak kabul edilemez hata doğurabilir; soft real-time'da gecikme kaliteyi bozar ama felaket değildir","Soft real-time yalnızca gömülü sistemlerde kullanılır","İkisi arasında fark yoktur"],
+    ans: 1,
+    exp: "Kalp pili gibi hard real-time sistemlerde süre sınırını kaçırmak yaşamsal hata olabilir; video oynatma gibi soft real-time'da gecikmeler performansı düşürür ama kabul edilemez değildir."
+  },
+  {
+    q: "Gömülü sistemle RTOS kavramı arasındaki temel fark nedir?",
+    opts: ["Gömülü sistemler her zaman RTOS kullanmak zorundadır","Gömülü sistem bağlamı (ürünün içindeki görev) tanımlar; RTOS zamanlama gereksinimini tanımlar","RTOS gömülü sistemlerin daha hızlı çalışan adıdır","Fark yoktur; aynı kavramlardır"],
+    ans: 1,
+    exp: "Gömülü sistem bir ürün içindeki kullanım bağlamını, RTOS ise yanıtın ne kadar öngörülebilir olması gerektiğini tanımlar. Gömülü sistem RTOS gerektirmeyebilir."
+  },
+  {
+    q: "Süper bilgisayar ile web sunucusu arasındaki temel fark nedir?",
+    opts: ["Web sunucuları daha pahalıdır","Süper bilgisayar büyük hesaplama işleri için yüksek toplam performansı hedefler; web sunucusu diğer cihazlara hizmet verme rolü üstlenir","İkisi de aynı işlevi görür","Süper bilgisayarlarda işletim sistemi olmaz"],
+    ans: 1,
+    exp: "Her web sunucusu süper bilgisayar değildir. Süper bilgisayar iklim modellemesi gibi devasa hesaplamalar için kullanılırken web sunucusu istemcilere hizmet odaklıdır."
+  },
+  // 21 — Sanallaştırma
+  {
+    q: "Sanallaştırma ortamında 'host OS' ne anlama gelir?",
+    opts: ["Sanal makine içinde çalışan ikinci işletim sistemi","Fiziksel bilgisayarda çalışan ve sanal makine yazılımına ortam sağlayan sistem","Ağ üzerinden bağlanılan uzak sunucu","Sanal donanımı oluşturan yazılım"],
+    ans: 1,
+    exp: "Host OS, fiziksel makinede kurulu olan ve VirtualBox gibi sanallaştırma aracını çalıştıran asıl işletim sistemidir."
+  },
+  {
+    q: "Sanallaştırma ortamında 'guest OS' ne anlama gelir?",
+    opts: ["Fiziksel makinedeki asıl işletim sistemi","Sanal makine içinde çalışan ikinci işletim sistemi","Ağ bağdaştırıcısı yazılımı","Sanallaştırma aracının kendisi"],
+    ans: 1,
+    exp: "Guest OS (konuk sistem), sanal makine içinde çalışan işletim sistemidir. Örnek: Windows içinde VirtualBox aracılığıyla çalışan Ubuntu."
+  },
+  {
+    q: "Windows'ta VirtualBox aracılığıyla Ubuntu çalıştırıldığında hangi unsur 'guest' rolündedir?",
+    opts: ["Windows","VirtualBox","Ubuntu","Fiziksel bilgisayarın CPU'su"],
+    ans: 2,
+    exp: "Windows = host OS, VirtualBox = sanallaştırma aracı, Ubuntu = guest OS. Guest, sanal makine içinde çalışan sistemdir."
+  },
+  {
+    q: "Guest işletim sistemine ayrılan RAM, fiziksel host bilgisayarın RAM'inden tamamen bağımsız mı çalışır?",
+    opts: ["Evet, tamamen bağımsız bellek havuzu oluşturulur","Hayır; guest'e ayrılan RAM, host'un fiziksel belleğinden karşılanır","Evet, ancak yalnızca SSD kullanılırsa","Hayır, ancak yalnızca Linux host için geçerlidir"],
+    ans: 1,
+    exp: "Sanal makineye atanan bellek, host bilgisayarın fiziksel RAM'inden ayrılır. Host ve guest kaynakları paylaşır."
+  },
+  {
+    q: "Dual-boot ile sanal makine arasındaki temel fark nedir?",
+    opts: ["İkisi de aynı anda iki sistemi çalıştırabilir","Dual-boot'ta bir seferde tek sistem çalışır; VM'de host ve guest aynı anda çalışabilir","VM'de restart gerekir; dual-boot'ta gerekmez","Dual-boot yalnızca Linux'ta kullanılır"],
+    ans: 1,
+    exp: "Dual-boot'ta diğer sisteme geçmek için yeniden başlatma gerekir. VM'de ise host ve guest eş zamanlı çalışabilir."
+  },
+  {
+    q: "QEMU'nun temel işlevi nedir?",
+    opts: ["Yalnızca dosya sıkıştırma yapmak","Sanal makine donanımını modellemek ve farklı işlemci mimarisini emüle edebilmek","Ağ güvenlik duvarı görevi görmek","Disk biçimlendirme aracı olarak çalışmak"],
+    ans: 1,
+    exp: "QEMU; sanal donanımı modeller ve farklı işlemci mimarilerini yazılımsal olarak taklit edebilir (emülasyon). KVM gibi hızlandırıcılarla da birlikte kullanılabilir."
+  },
+  {
+    q: "Konteyner (container) teknolojisi ile sanal makine arasındaki temel fark nedir?",
+    opts: ["Konteynerler ve VM'ler tamamen aynıdır","Konteynerler genellikle host'un çekirdeğini paylaşır; VM'de ayrı bir guest çekirdeği çalışır","VM'ler konteynerden daha azdır","Konteynerler yalnızca Windows'ta çalışır"],
+    ans: 1,
+    exp: "Konteynerler host çekirdeğini paylaşır ve bu sayede daha hafiftir; VM'ler ise tam bir guest işletim sistemi çalıştırır."
+  },
+  // 28 — Lisans
+  {
+    q: "Yazılım lisansı neden önemlidir?",
+    opts: ["Yalnızca yazılımın fiyatını belirler","Kullanma, kopyalama, değiştirme ve dağıtma haklarını ve koşullarını düzenler","Sadece ticari şirketleri ilgilendirir","Teknik performansı artırmak için gereklidir"],
+    ans: 1,
+    exp: "Lisans, bir yazılımla neler yapılabileceğini (kullanma, değiştirme, dağıtma) ve hangi koşullarda yapılabileceğini hukuki olarak düzenler."
+  },
+  {
+    q: "Özgür yazılımda (free software) 'free' kavramı öncelikle neyi ifade eder?",
+    opts: ["Ücretsiz olma","Kullanıcı özgürlükleri (çalıştırma, inceleme, değiştirme, paylaşma)","Açık kaynak olma zorunluluğu","Ticari satışın yasak olması"],
+    ans: 1,
+    exp: "GNU felsefesinde 'free software' ifadesindeki 'free'; fiyat değil, kullanıcının yazılım üzerindeki dört temel özgürlüğünü ifade eder."
+  },
+  {
+    q: "Özgür yazılımın dört temel özgürlüğünden biri hangisi değildir?",
+    opts: ["Yazılımı her amaçla çalıştırma","Kaynak kodunu inceleme ve değiştirme","Yazılımın kaynak kodunu her durumda kamuya yayımlama zorunluluğu","Değiştirilmiş sürümü dağıtabilme"],
+    ans: 2,
+    exp: "Dört özgürlük: çalıştırma, inceleme/değiştirme, kopya paylaşma ve değiştirilmiş sürümü paylaşma. Kamuya yayımlama zorunluluğu temel özgürlük değil, bazı lisansların (GPL) koşuludur."
+  },
+  {
+    q: "Bir yazılımın kaynak kodunu internette görebilmek, o kodu değiştirip dağıtma izninin verildiği anlamına mı gelir?",
+    opts: ["Evet, internet üzerinde görünür olması izin verir","Hayır; geçerli izin için uygun bir lisans koşuluna ihtiyaç vardır","Evet, ancak yalnızca eğitim amaçlı kullanım için","Hayır, yalnızca ticari yazılımlar için geçerlidir"],
+    ans: 1,
+    exp: "Kaynak kodunu görmek, onu değiştirme veya dağıtma hakkı vermez. İzinler lisans koşullarıyla belirlenir."
+  },
+  {
+    q: "MIT lisansının temel özelliği nedir?",
+    opts: ["Değiştirilmiş kodu her zaman açık kaynak olarak dağıtmayı zorunlu kılar","Kullanma, değiştirme ve dağıtım için geniş izin verir; yalnızca telif bildirimi korunması gerekir","Yalnızca eğitim kurumlarına ücretsizdir","Ticari kullanımı tamamen yasaklar"],
+    ans: 1,
+    exp: "MIT lisansı izin verici bir lisanstır. Değiştirilmiş kodu kapalı kaynak olarak dağıtmak bile mümkündür; tek koşul orijinal lisans bildiriminin korunmasıdır."
+  },
+  {
+    q: "GPL lisansının temel özelliği nedir?",
+    opts: ["Yazılımı yalnızca ücretsiz dağıtmayı zorunlu kılar","Kapsanan yazılımın değiştirilmiş sürümü dağıtıldığında ilgili GPL koşullarının ve kaynak kodunun da sağlanmasını gerektirir","Ticari kullanımı tamamen yasaklar","Kaynak kodu incelemeyi yasaklar"],
+    ans: 1,
+    exp: "GPL'nin 'copyleft' anlayışı; türetilmiş eserin dağıtılması durumunda aynı özgürlüklerin sonraki kullanıcılara da tanınmasını zorunlu kılar."
+  },
+  {
+    q: "MIT lisanslı bir kodu değiştirip ticari bir üründe kullanmak mümkün müdür?",
+    opts: ["Hayır, MIT yalnızca akademik kullanım içindir","Evet; MIT bildirimleri korunduğu sürece kapalı kaynaklı ticari üründe bile kullanılabilir","Evet, ancak değişiklikler mutlaka paylaşılmalıdır","Hayır, ticari kullanım için ayrıca ödeme gerekir"],
+    ans: 1,
+    exp: "MIT lisansı değiştirme, ticari dağıtım ve kapalı kaynak ürünlere dahil etmeye izin verir. Tek koşul lisans bildiriminin korunmasıdır."
+  },
+  {
+    q: "GPL lisanslı bir aracı yalnızca ödevinizi yazmak için kullanmak, ödevinizi otomatik olarak GPL kapsamına sokar mı?",
+    opts: ["Evet, kullanılan araç ne olursa olsun eseri etkiler","Hayır; GPL'nin dağıtım yükümlülükleri kapsanan yazılımı dağıtmak için geçerlidir, eserinizi yazarken araç kullanmak değil","Evet, ancak yalnızca ödev kamuya yayımlanırsa","Hayır, yalnızca profesyonel projeler için geçerlidir"],
+    ans: 1,
+    exp: "GPL yükümlülükleri kapsanan yazılımın dağıtımıyla tetiklenir. Bir uygulamayı çalıştırarak ürettiğiniz içerik otomatik olarak GPL kapsamına girmez."
+  },
+  {
+    q: "GPL ile AGPL arasındaki temel fark nedir?",
+    opts: ["AGPL yalnızca sunucu yazılımı için geçerlidir","AGPL, değiştirilmiş sürümle ağ üzerinden etkileşim sağlanması durumunda da kaynak kodu sağlama şartı ekler","İkisi tamamen aynı lisanstır","GPL daha kısıtlayıcıdır"],
+    ans: 1,
+    exp: "AGPL, GPL'nin ağ hizmetleri için genişletilmiş versiyonudur; değiştirilmiş sürümün ağ üzerinden sunulması bile kaynak paylaşımını gerektirebilir."
+  },
+  {
+    q: "Freeware (ücretsiz yazılım) ile özgür yazılım (free software) arasındaki fark nedir?",
+    opts: ["İkisi tamamen aynı kavramlardır","Freeware genellikle ücretsiz kullanım sunar ancak diğer haklar (değiştirme, kaynak) kısıtlı olabilir; özgür yazılım dört temel özgürlüğü tanır","Özgür yazılım her zaman ücretsizdir","Freeware açık kaynaklı olmak zorundadır"],
+    ans: 1,
+    exp: "Freeware ücretsiz indirilebilir ama kapalı kaynaklı ve kısıtlı haklı olabilir. Özgür yazılım ise fiyattan bağımsız olarak kullanıcıya dört temel hakkı tanır."
+  },
+  {
+    q: "Öğrenci lisansı mezuniyet sonrasında mesleki kullanımda her zaman geçerli midir?",
+    opts: ["Evet, öğrenci sıfatıyla alınan lisans her zaman geçer","Hayır; lisans koşulları kapsam, süre ve kullanım amacı bakımından kontrol edilmelidir","Evet, ancak yalnızca ücretsiz yazılımlar için","Hayır, yalnızca Windows lisansları için geçerlidir"],
+    ans: 1,
+    exp: "Öğrenci lisansları genellikle eğitim süresiyle ya da belirli koşullarla sınırlıdır. Mezuniyet sonrası kullanım için lisans koşulları ayrıca incelenmelidir."
+  },
+  // 40 — Web ve yazılım türleri
+  {
+    q: "Web hizmeti nedir?",
+    opts: ["Yalnızca e-posta göndermek için kullanılan sistem","Ağ üzerinden istemcilerin yararlandığı; tarayıcı, mobil veya masaüstü uygulama üzerinden erişilen uzak hizmet","Fiziksel olarak ulaşılan veri merkezi","Yalnızca büyük şirketlerin kullanabileceği altyapı"],
+    ans: 1,
+    exp: "Web hizmeti; bir sunucunun ağ üzerinden (HTTP/HTTPS) istemcilere yanıt vermesidir. Kullanıcı tarayıcı veya uygulama ile bağlanır; sunucu isteği işler."
+  },
+  {
+    q: "İstemci–sunucu modelinde web isteği tipik olarak nerede işlenir?",
+    opts: ["Yalnızca kullanıcının tarayıcısında","Uzak sunucuda","Ağ kablosunda","Kullanıcının RAM'inde"],
+    ans: 1,
+    exp: "HTTP isteği istemciden gönderilir; sunucu tarafındaki hizmet yazılımı bunu işler, gerekirse veri tabanına başvurur ve yanıtı istemciye döner."
+  },
+  {
+    q: "Bir web uygulamasının tüm işlemlerinin tarayıcıda (istemci tarafında) gerçekleştiği doğru mudur?",
+    opts: ["Evet, modern tarayıcılar her şeyi yapar","Hayır; işlemler istemci ve sunucu arasında bölünür","Evet, ancak yalnızca JavaScript kullanılırsa","Hayır, tüm işlemler sunucuda gerçekleşir"],
+    ans: 1,
+    exp: "Web uygulamaları; bazı görevleri istemcide (tarayıcı), bazılarını sunucuda (iş mantığı, veri işleme) gerçekleştiren dağıtık bir yapıya sahiptir."
+  },
+  {
+    q: "Sunucu yazılımının (örn. Nginx) bir masaüstü grafik arayüzü olması zorunlu mudur?",
+    opts: ["Evet, tüm yazılımların arayüzü olmalıdır","Hayır; sunucu yazılımı genellikle arka planda çalışır, grafik arayüz gerekmez","Evet, ancak yalnızca Linux sunucularında","Hayır, yalnızca açık kaynak sunucularda"],
+    ans: 1,
+    exp: "Nginx veya Apache gibi sunucu yazılımları genellikle terminal/komut satırı üzerinden yönetilir, kullanıcıya grafik arayüz sunmalarına gerek yoktur."
+  },
+  {
+    q: "Web uygulaması ile API arasındaki temel fark nedir?",
+    opts: ["İkisi tamamen aynı kavramlardır","Web uygulaması kullanıcıya görsel arayüz sunar; API ise yazılımların veri alışverişi için kullandığı yapılandırılmış arayüzdür","API yalnızca mobil uygulamalarda kullanılır","Web uygulaması sunucuda, API istemcide çalışır"],
+    ans: 1,
+    exp: "Web uygulaması HTML sayfası döndürür ve kullanıcıyla etkileşir; API JSON gibi yapılandırılmış veri döndürür ve yazılımların birbirleriyle haberleşmesine aracılık eder."
+  },
+  {
+    q: "Bir mobil uygulama uzak sunucudan veri alabilir mi?",
+    opts: ["Hayır, yalnızca tarayıcılar sunucuyla iletişim kurabilir","Evet; mobil uygulamalar da API üzerinden uzak sunuculardan veri alabilir","Evet, ancak yalnızca Wi-Fi bağlantısıyla","Hayır, yalnızca masaüstü uygulamalar bunu yapabilir"],
+    ans: 1,
+    exp: "Mobil uygulamalar HTTP/HTTPS üzerinden API çağrıları yaparak sunucudan veri alabilir; bu işlev için tarayıcıya ihtiyaç yoktur."
+  },
+  {
+    q: "'Buluta bağlı' olmak yerel bilgisayarı ortadan kaldırır mı?",
+    opts: ["Evet, bulut hizmetleri yerel cihazı gereksiz kılar","Hayır; yerel cihaz, işletim sistemi ve istemci yazılımı her zaman çalışmaya devam eder","Evet, ancak yalnızca ChromeOS'ta","Hayır, yalnızca sunucu tarafı için geçerlidir"],
+    ans: 1,
+    exp: "Bulut hizmetleri uzaktaki sunucuları kullanır; ancak kullanıcının cihazında işletim sistemi ve istemci yazılımı çalışmaya devam eder. Yerel cihaz ortadan kalkmaz."
+  },
+  {
+    q: "Sistem yazılımı ile uygulama yazılımı arasındaki fark nedir?",
+    opts: ["Sistem yazılımı daha pahalıdır","Sistem yazılımı (işletim sistemi, sürücüler) donanımı yönetir; uygulama yazılımı kullanıcı görevlerini yerine getirir","İkisi tamamen aynı şeydir","Uygulama yazılımı her zaman açık kaynaklıdır"],
+    ans: 1,
+    exp: "İşletim sistemi ve sürücüler sistem yazılımı; Word veya Zotero gibi araçlar ise uygulama yazılımıdır."
+  },
+  {
+    q: "TOP500 listesindeki süper bilgisayarların büyük çoğunluğunda hangi işletim sistemi kullanılmaktadır?",
+    opts: ["Windows Server","macOS","Linux","z/OS"],
+    ans: 2,
+    exp: "TOP500 verilerine göre süper bilgisayarların büyük bölümünde Linux işletim sistemi kullanılmaktadır."
+  },
+  {
+    q: "Abonelik lisansı ile kalıcı lisans arasındaki fark nedir?",
+    opts: ["İkisi de aynı haklara sahiptir","Abonelik süreli hizmet hakkı sunar; kalıcı lisans belirli koşullarda süresiz kullanım hakkı tanır ancak gelecek sürümleri kapsamayabilir","Kalıcı lisans her zaman daha ucuzdur","Abonelik yalnızca kurumsal kullanım içindir"],
+    ans: 1,
+    exp: "Abonelik lisansı (örn. Microsoft 365) yenilendiğinde aktif kalır; kalıcı lisans (örn. Office 2021) belirli bir sürüm için süresiz olabilir ancak sonraki sürümler ek ödeme gerektirebilir."
+  },
+  {
+    q: "Diş hekimliği pratiğinde kullanılan dijital röntgen cihazının iç kontrol yazılımı hangi tür sisteme örnek gösterilebilir?",
+    opts: ["Süper bilgisayar","Masaüstü işletim sistemi","Gömülü sistem","Sanal makine"],
+    ans: 2,
+    exp: "Röntgen cihazının içinde belirli kontrol görevlerini üstlenen yazılım gömülü sistem kavramına uygundur; genel amaçlı masaüstü gibi her işi yapması gerekmez."
+  },
+  {
+    q: "Paralel çalışma (birden fazla işlemci kullanımı) her iş yükünü eşit derecede hızlandırır mı?",
+    opts: ["Evet, her zaman doğrusal olarak hızlandırır","Hayır; işin bölünebilirliği, iletişim ve koordinasyon maliyeti sonucu etkiler","Evet, ancak yalnızca RTOS kullanılırsa","Hayır, yalnızca belirli programlama dilleri paralel çalışmayı destekler"],
+    ans: 1,
+    exp: "Paralel çalışmanın faydası işin bölünebilme derecesine ve süreçler arası iletişim yüküne bağlıdır. Her görev eşit ölçüde hızlanmaz."
+  },
+  {
+    q: "IBM z/OS ve IBM AIX arasındaki temel fark nedir?",
+    opts: ["İkisi de aynı sistemdir","z/OS ana bilgisayar (mainframe) ortamı için tasarlanmıştır; AIX ise UNIX kökenli kurumsal bir sunucu işletim sistemidir","z/OS masaüstü, AIX mobil içindir","İkisi de açık kaynaklıdır"],
+    ans: 1,
+    exp: "z/OS IBM'in mainframe sistemleri için özel iş yükü yöneticisidir; AIX ise IBM'in UNIX standardına dayalı kurumsal sunucu sistemidir. Aynı UNIX türevi kutusuna konulmamalıdır."
+  }
+];
+
+let current = 0;
+let correct = 0;
+let wrong = 0;
+let skipped = 0;
+let answered = false;
+
+function render() {
+  const q = QUESTIONS[current];
+  document.getElementById('q-num').textContent = 'S ' + (current + 1);
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('prog-label').textContent = (current + 1) + ' / ' + QUESTIONS.length;
+  document.getElementById('prog-fill').style.width = ((current + 1) / QUESTIONS.length * 100) + '%';
+
+  const optDiv = document.getElementById('options');
+  optDiv.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="opt-letter">' + letters[i] + '</span><span>' + o + '</span>';
+    btn.onclick = () => select(i);
+    optDiv.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback-box';
+  fb.textContent = '';
+
+  document.getElementById('next-btn').disabled = true;
+  document.getElementById('skip-btn').disabled = false;
+  answered = false;
+}
+
+function select(idx) {
+  if (answered) return;
+  answered = true;
+
+  const q = QUESTIONS[current];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (idx === q.ans) {
+    correct++;
+    fb.className = 'feedback-box correct-fb show';
+    fb.textContent = '✓ Doğru! ' + q.exp;
+  } else {
+    wrong++;
+    fb.className = 'feedback-box wrong-fb show';
+    fb.textContent = '✗ Yanlış. Doğru cevap: ' + q.opts[q.ans] + '. ' + q.exp;
+  }
+
+  document.getElementById('skip-btn').disabled = true;
+  document.getElementById('next-btn').disabled = false;
+  updateHeader();
+}
+
+function updateHeader() {
+  document.getElementById('hdr-correct').textContent = correct;
+  document.getElementById('hdr-wrong').textContent = wrong;
+}
+
+document.getElementById('next-btn').onclick = () => {
+  current++;
+  if (current >= QUESTIONS.length) showResults();
+  else render();
+};
+
+document.getElementById('skip-btn').onclick = () => {
+  if (answered) return;
+  skipped++;
+  current++;
+  if (current >= QUESTIONS.length) showResults();
+  else render();
+};
+
+function showResults() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const res = document.getElementById('results-screen');
+  res.style.display = 'block';
+
+  const pct = Math.round(correct / QUESTIONS.length * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-circle').style.setProperty('--pct', pct + '%');
+
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-skipped').textContent = skipped;
+
+  let title, msg;
+  if (pct >= 90) { title = 'Mükemmel! 🎉'; msg = 'Tebrikler! Konuyu çok iyi kavradınız.'; }
+  else if (pct >= 70) { title = 'İyi İş! 👏'; msg = 'Konuyu genel olarak iyi kavramışsınız. Eksik kalan bölümleri gözden geçirin.'; }
+  else if (pct >= 50) { title = 'Geçer Puan ✓'; msg = 'Temel kavramları öğrendiniz ancak bazı bölümleri pekiştirmeniz önerilir.'; }
+  else { title = 'Tekrar Çalışın 📚'; msg = 'Konuyu tekrar gözden geçirip quiz\'i yeniden deneyin.'; }
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+}
+
+function restart() {
+  current = 0; correct = 0; wrong = 0; skipped = 0; answered = false;
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  updateHeader();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
