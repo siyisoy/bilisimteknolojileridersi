@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Windows 11 Quiz – Diş Hekimliği 1. Sınıf</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1823;color:#e2eaf4;font-family:system-ui,sans-serif;min-height:100vh}
+header{background:#162030;border-bottom:1px solid #2a3f58;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:10}
+header h1{font-size:clamp(14px,2vw,18px);color:#38bdf8}
+header p{font-size:12px;color:#7a9ab8;margin-top:2px}
+.score{background:#1d2e42;border:1px solid #2a3f58;border-radius:10px;padding:8px 16px;font-size:13px;color:#7a9ab8}
+.score span{color:#e2eaf4;font-weight:700}
+main{max-width:800px;margin:0 auto;padding:32px 20px 80px}
+.prog-wrap{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.prog-bar{flex:1;height:6px;background:#2a3f58;border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#6366f1,#38bdf8);border-radius:99px;transition:width .3s}
+.prog-lbl{font-size:12px;color:#7a9ab8;white-space:nowrap}
+.card{background:#1d2e42;border:1px solid #2a3f58;border-radius:14px;padding:24px}
+.q-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+.q-num{background:linear-gradient(135deg,#6366f1,#38bdf8);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:7px;white-space:nowrap;margin-top:2px}
+.q-text{font-size:clamp(15px,2vw,17px);line-height:1.6;font-weight:500}
+.options{display:flex;flex-direction:column;gap:9px;margin-bottom:18px}
+.opt{display:flex;align-items:flex-start;gap:10px;background:#162030;border:1.5px solid #2a3f58;border-radius:10px;padding:12px 14px;cursor:pointer;text-align:left;color:#e2eaf4;font:15px/1.4 system-ui,sans-serif;transition:border-color .15s,background .15s;width:100%}
+.opt:hover:not(:disabled){border-color:#38bdf8;background:#1a2f47}
+.opt-ltr{background:#2a3f58;color:#7a9ab8;border-radius:5px;font-size:11px;font-weight:700;padding:2px 7px;min-width:24px;text-align:center;margin-top:1px}
+.opt.correct{border-color:#34d399;background:#0d2a1f}
+.opt.correct .opt-ltr{background:#34d399;color:#0a1f14}
+.opt.wrong{border-color:#f87171;background:#2a1313}
+.opt.wrong .opt-ltr{background:#f87171;color:#1a0a0a}
+.opt:disabled{cursor:default}
+.feedback{padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5;display:none;margin-bottom:16px}
+.feedback.show{display:block}
+.fb-ok{background:#0d2a1f;border:1px solid #34d399;color:#6ee7b7}
+.fb-err{background:#2a1313;border:1px solid #f87171;color:#fca5a5}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn-next{background:linear-gradient(135deg,#6366f1,#38bdf8);border:none;border-radius:10px;color:#fff;font:600 14px system-ui;padding:10px 22px;cursor:pointer}
+.btn-next:disabled{opacity:.4;cursor:default}
+.btn-skip{background:transparent;border:1.5px solid #2a3f58;border-radius:10px;color:#7a9ab8;font:14px system-ui;padding:9px 16px;cursor:pointer}
+.btn-skip:hover{border-color:#38bdf8;color:#38bdf8}
+#results{display:none;text-align:center}
+.res-card{background:#1d2e42;border:1px solid #2a3f58;border-radius:14px;padding:40px 28px;max-width:520px;margin:0 auto}
+.res-card h2{color:#38bdf8;font-size:22px;margin-bottom:8px}
+.res-card p{color:#7a9ab8;font-size:14px;margin-bottom:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+.stat{background:#162030;border:1px solid #2a3f58;border-radius:10px;padding:12px 6px}
+.stat .v{font-size:22px;font-weight:700;display:block;margin-bottom:3px}
+.stat .l{font-size:11px;color:#7a9ab8}
+.green{color:#34d399}.red{color:#f87171}.blue{color:#38bdf8}
+.btn-restart{background:linear-gradient(135deg,#6366f1,#38bdf8);border:none;border-radius:10px;color:#fff;font:600 15px system-ui;padding:12px 32px;cursor:pointer;margin-top:8px}
+@media(max-width:500px){main{padding:20px 14px 70px}.card{padding:18px 14px}.stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Windows 11 Temel Araçlar Quiz</h1><p>Diş Hekimliği 1. Sınıf · 50 Soru</p></div>
+  <div class="score">Doğru: <span id="hdr-c">0</span> &nbsp;|&nbsp; Yanlış: <span id="hdr-w">0</span></div>
+</header>
+<main>
+  <div id="quiz">
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="prog" style="width:2%"></div></div>
+      <div class="prog-lbl" id="prog-lbl">1 / 50</div>
+    </div>
+    <div class="card">
+      <div class="q-head"><div class="q-num" id="qnum">S 1</div><div class="q-text" id="qtext"></div></div>
+      <div class="options" id="opts"></div>
+      <div class="feedback" id="fb"></div>
+      <div class="foot">
+        <button class="btn-skip" id="skip">Atla →</button>
+        <button class="btn-next" id="next" disabled>Sonraki →</button>
+      </div>
+    </div>
+  </div>
+  <div id="results">
+    <div class="res-card">
+      <h2 id="res-title"></h2>
+      <p id="res-msg"></p>
+      <div class="stats">
+        <div class="stat"><span class="v green" id="rc">0</span><span class="l">Doğru</span></div>
+        <div class="stat"><span class="v red" id="rw">0</span><span class="l">Yanlış</span></div>
+        <div class="stat"><span class="v blue" id="rs">0</span><span class="l">Atlanan</span></div>
+      </div>
+      <button class="btn-restart" onclick="restart()">Tekrar Başla</button>
+    </div>
+  </div>
+</main>
+<script>
+var Q=[
+{q:"Windows 11'de Dosya Gezgini'ni hızlıca açmak için hangi kısayol kullanılır?",o:["Ctrl+Shift+Esc","Win+E","Win+I","Alt+Tab"],a:1,e:"Win+E Dosya Gezgini'ni açar. Ctrl+Shift+Esc Görev Yöneticisi, Win+I Ayarlar, Alt+Tab pencereler arası geçiş içindir."},
+{q:"Görev Yöneticisi'ni klavyeden doğrudan açmak için hangi kısayol kullanılır?",o:["Win+R","Ctrl+Shift+Esc","Win+X","Win+L"],a:1,e:"Ctrl+Shift+Esc Görev Yöneticisi'ni doğrudan açar. Win+R Çalıştır kutusunu, Win+X hızlı sistem menüsünü, Win+L ekranı kilitler."},
+{q:"Windows 11'de ekranı kilitlemek için hangi kısayol kullanılır?",o:["Win+E","Win+L","Win+I","Win+R"],a:1,e:"Win+L ekranı kilitler. Win+E Dosya Gezgini, Win+I Ayarlar, Win+R Çalıştır kutusunu açar."},
+{q:"Windows 11'de Ayarlar uygulamasını hızla açmak için hangi kısayol kullanılır?",o:["Win+X","Win+I","Ctrl+Shift+Esc","Win+E"],a:1,e:"Win+I Ayarlar uygulamasını açar."},
+{q:"Windows 11'de hızlı sistem araçları menüsünü açmak için hangi kısayol kullanılır?",o:["Win+L","Win+X","Win+E","Ctrl+Z"],a:1,e:"Win+X hızlı sistem araçları menüsünü açar; buradan Görev Yöneticisi, Aygıt Yöneticisi gibi araçlara kısayol ile ulaşılabilir."},
+{q:"Dosya Gezgini'nde adres çubuğu ne işe yarar?",o:["Dosyaları silmek için kullanılır","Bulunduğunuz klasör konumunu gösterir","Dosya boyutunu değiştirmek için kullanılır","Yeni klasör oluşturmak için kullanılır"],a:1,e:"Adres çubuğu o anda bulunduğunuz klasör yolunu gösterir ve başka bir konuma hızlıca gitmenizi sağlar."},
+{q:"Dosya Gezgini'nde 'Bu Bilgisayar' bölümü ne gösterir?",o:["Yalnızca indirilen dosyaları listeler","Sürücüleri ve kullanılabilir disk alanı bilgisini gösterir","Çalışan uygulamaların listesini sunar","Yalnızca ağa bağlı klasörleri gösterir"],a:1,e:"'Bu Bilgisayar' bölümünde sabit diskler, USB sürücüler ve optik sürücüler ile her birinin kullanılabilir alanı görüntülenir."},
+{q:"Dosya Gezgini'nde dosya adı uzantılarını görünür yapmak için hangi yol izlenir?",o:["Araçlar → Klasör seçenekleri → Güvenlik","Görünüm → Göster → Dosya adı uzantıları","Dosya → Özellikler → Uzantı","Ayarlar → Sistem → Dosya türleri"],a:1,e:"Dosya adı uzantılarını görmek için Görünüm → Göster → Dosya adı uzantıları seçeneği etkinleştirilir."},
+{q:"Aynı ada sahip iki dosyayı ayırt ederken ilk incelenmesi gereken bilgiler hangileridir?",o:["Yalnızca dosya boyutu","Klasör yolu ve son değişiklik tarihi","Dosyaların renk simgeleri","Her ikisi de silinip yeniden oluşturulur"],a:1,e:"Aynı isimli dosyalarda yol ve değişiklik tarihi karşılaştırılarak doğru dosya belirlenir."},
+{q:"Dosya Gezgini'nde bir dosyayı kopyalamak için hangi kısayollar kullanılır?",o:["Ctrl+X ve ardından Ctrl+V","Ctrl+C ve ardından Ctrl+V","F2 ve ardından Enter","Ctrl+Z ve ardından Ctrl+Y"],a:1,e:"Ctrl+C kopyalar, Ctrl+V yapıştırır. Ctrl+X kes işlemi içindir; kaynak dosyayı yerinde bırakmaz."},
+{q:"Dosya Gezgini'nde bir dosyayı taşımak için kullanılan kısayol hangisidir?",o:["Ctrl+C","Ctrl+X","F2","Ctrl+Shift+N"],a:1,e:"Ctrl+X dosyayı keser; Ctrl+V ile hedef konuma yapıştırıldığında kaynak konum boşalır."},
+{q:"Dosya Gezgini'nde bir dosyayı yeniden adlandırmak için hangi tuş kullanılır?",o:["Delete","F2","Ctrl+R","Enter"],a:1,e:"F2 tuşu seçili dosyayı yeniden adlandırma moduna alır. İçerik değişmez, yalnızca isim güncellenir."},
+{q:"Delete tuşuyla silinen yerel bir dosyaya Windows 11'de ne olur?",o:["Kalıcı olarak silinir","Çoğu durumda Geri Dönüşüm Kutusu'na taşınır","Bulut yedeğine otomatik gönderilir","Şifrelenip arşive alınır"],a:1,e:"Delete ile silinen yerel dosyalar genellikle Geri Dönüşüm Kutusu'na gider ve buradan geri yüklenebilir. Shift+Delete kutuyu atlayabilir."},
+{q:"Masaüstündeki bir uygulama kısayolunu silmek ne anlama gelir?",o:["Uygulamayı sistemden tamamen kaldırır","Yalnızca kısayolu siler; uygulama kurulu kalmaya devam eder","Uygulamayı geçici olarak devre dışı bırakır","Lisansı iptal eder"],a:1,e:"Kısayol, asıl uygulamaya işaret eden bir bağlantıdır. Silinmesi yalnızca o bağlantıyı kaldırır; uygulama Program Files'ta kurulu kalmaya devam eder."},
+{q:"Yeni bir klasör oluşturmak için hangi kısayol kullanılır?",o:["Ctrl+N","Ctrl+Shift+N","Ctrl+F","Ctrl+Alt+N"],a:1,e:"Ctrl+Shift+N Dosya Gezgini'nde yeni klasör oluşturur."},
+{q:"Yerel dosya ile bulutla eşitlenen klasör arasındaki temel fark nedir?",o:["Yerel dosyalar her zaman daha hızlı açılır","Yerel dosya yalnızca cihazda bulunur; eşitlenen klasör uzak hizmetle senkronize olabilir","Bulut klasörleri hiçbir zaman silinmez","Yerel dosyalar şifrelidir, bulut dosyaları değildir"],a:1,e:"Yerel dosyalar yalnızca o cihazın depolamasındadır. Bulutla eşitlenen klasörler içeriği uzak sunucuyla senkronize eder; bu durum yanlış silmeleri de taşıyabilir."},
+{q:"Bulut eşitlemesi neden yedekleme ile aynı şey değildir?",o:["Bulut eşitlemesi daha yavaştır","Eşitleme yanlış silme veya değişikliği de uzak konuma yansıtabilir; bağımsız yedek bunu önler","Bulut eşitlemesi yalnızca fotoğraflar için çalışır","Yedekleme internet gerektirmez"],a:1,e:"Eşitleme yerel değişiklikleri buluta aynen yansıtır. Yanlış silme buluta da uygulanabilir. Bağımsız yedek anlık bir kopya olarak bu durumu önler."},
+{q:"Windows 11'de yüklü uygulamaları listelemenin ve kaldırmanın önerilen yolu hangisidir?",o:["Program Files klasörünü açıp klasörü elle silmek","Ayarlar → Uygulamalar → Yüklü uygulamalar yolunu kullanmak","Masaüstü kısayolunu sağ tıklayıp Kaldır seçmek","Görev Yöneticisi'nden süreci sonlandırmak"],a:1,e:"Ayarlar → Uygulamalar → Yüklü uygulamalar yolu, uygulamaları düzgün kaldırmanın önerilen yöntemidir."},
+{q:"Program Files klasörünü elle silmek neden doğru bir kaldırma yöntemi değildir?",o:["Klasör silindikten sonra geri yüklenemez","Kayıt defterinde ve sistemde artık girdiler kalabilir; uygulama tam olarak temizlenmez","Klasörün silinmesi yönetici yetkisi gerektirmez","Bu yöntem yalnızca eski Windows sürümlerinde çalışırdı"],a:1,e:"Uygulama yükleyicisi kurulum sırasında kayıt defterine ve başka konumlara da yazabilir. Yalnızca klasörü silmek bu artıkları temizlemez."},
+{q:"Bazı eski uygulamaların kaldırılması için Ayarlar yerine hangi ek yol kullanılabilir?",o:["Görev Yöneticisi → Ayrıntılar sekmesi","Denetim Masası → Programlar → Programlar ve Özellikler","Aygıt Yöneticisi → Sürücüleri kaldır","Olay Görüntüleyicisi → Uygulama günlüğü"],a:1,e:"Bazı klasik programlar Denetim Masası → Programlar → Programlar ve Özellikler üzerinden kaldırılır."},
+{q:"Bir uygulama sorun çıkardığında ilk denenmesi gereken seçenek nedir?",o:["Program Files klasörünü hemen silmek","Destekleniyorsa Ayarlar'dan Onar seçeneğini denemek","Bilgisayarı yeniden başlatmadan süreci sonlandırmak","Uygulamanın başlangıç girdisini devre dışı bırakmak"],a:1,e:"Destekleyen uygulamalarda Ayarlar → Uygulamalar → Onar yolu, kaldırma yapmadan sorunları giderebilir."},
+{q:"Uygulama sıfırlama (Reset) işlemi yapılmadan önce bilinmesi gereken en önemli bilgi nedir?",o:["Sıfırlama işlemi uygulamayı sistemden kaldırır","Uygulama verisi ve ayarları kaybolabilir; uyarı dikkatlice okunmalıdır","Sıfırlama yalnızca Microsoft Store uygulamalarında mevcut değildir","Sıfırlama yönetici yetkisi gerektirmez"],a:1,e:"Sıfırlama, oturum açma bilgileri, tercihler ve önbellek gibi verileri silebilir. Bu nedenle uyarı ekranı dikkatlice okunmalıdır."},
+{q:"Windows 11'de başlangıç uygulamalarını yönetmek için hangi yollardan biri kullanılabilir?",o:["Denetim Masası → Sistem → Başlangıç","Ayarlar → Uygulamalar → Başlangıç veya Görev Yöneticisi → Başlangıç uygulamaları","Aygıt Yöneticisi → Başlangıç sürücüleri","Olay Görüntüleyicisi → Sistem günlüğü"],a:1,e:"Başlangıç uygulamaları Ayarlar → Uygulamalar → Başlangıç veya Görev Yöneticisi'nin Başlangıç uygulamaları sekmesinden yönetilir."},
+{q:"Bir başlangıç uygulamasını devre dışı bırakmak ne anlama gelir?",o:["Uygulamayı sistemden kalıcı olarak siler","Uygulamanın oturum açılışında otomatik başlamasını engeller; uygulama kurulu kalmaya devam eder","Lisansı iptal eder","Uygulamanın güncellenmesini durdurur"],a:1,e:"Başlangıç girdisini devre dışı bırakmak yalnızca otomatik başlatmayı engeller. Uygulama sistemde kurulu kalmaya devam eder."},
+{q:"Görev Yöneticisi'nin 'İşlemler' sekmesi ne gösterir?",o:["Yalnızca arka plan hizmetlerini listeler","Çalışan uygulama ve süreçleri ile CPU, bellek, disk ve ağ kullanımlarını gösterir","Yalnızca kullanıcının açtığı pencereleri listeler","Sistemde kurulu tüm programları gösterir"],a:1,e:"İşlemler sekmesi; aktif uygulamalar ve arka plan süreçlerini, her birinin anlık CPU, bellek, disk ve ağ kullanımlarını gösterir."},
+{q:"Görev Yöneticisi'nde 'Performans' sekmesi ne işe yarar?",o:["Yüklü uygulamaları listeler","CPU, bellek, disk ve ağ etkinliğinin grafiksel izlenmesini sağlar","Başlangıç uygulamalarını yönetir","Kullanıcı hesaplarını yönetir"],a:1,e:"Performans sekmesi; CPU, RAM, disk ve ağ kullanımını zaman grafikleriyle gösterir."},
+{q:"Görev Yöneticisi'nde 'Disk' sütununun yüksek görünmesi ne anlama gelir?",o:["Diskin dolu olduğu anlamına gelir","O an disk üzerinde yoğun okuma/yazma etkinliği olduğu anlamına gelir","Disk sürücüsünün bozuk olduğu anlamına gelir","Disk şifrelemesinin aktif olduğu anlamına gelir"],a:1,e:"Disk sütunu okuma/yazma etkinliğini gösterir; bu, disk doluluk oranıyla ilgili bir bilgi değildir."},
+{q:"Video dışa aktarma sırasında CPU kullanımının yüksek görünmesi nasıl yorumlanmalıdır?",o:["Kesinlikle zararlı yazılım belirtisidir","Yapılan iş yüküyle uyumlu olabilir; süre ve diğer belirtiler izlenmelidir","Tüm arka plan süreçleri hemen kapatılmalıdır","İşlemci arızalıdır"],a:1,e:"Video dışa aktarma gibi yoğun işlemler doğal olarak yüksek CPU kullanımına yol açar. Kısa süreli yüksek kullanım tek başına arıza kanıtı değildir."},
+{q:"Tanımadığınız bir Windows sistem süreci için 'Görevi sonlandır' kullanılmalı mı?",o:["Evet, RAM açmak için güvenli bir yöntemdir","Hayır; sistem süreçlerine müdahale etmek kararsızlığa yol açabilir, destek istenmelidir","Evet, ancak yalnızca yönetici hesabından yapılırsa","Evet, çünkü tüm süreçler yeniden başlar"],a:1,e:"Tanınmayan sistem süreçlerini sonlandırmak işletim sistemini kararsız hale getirebilir. Yalnızca tanınan kendi uygulamalarınız için değerlendirilebilir."},
+{q:"Uygulama, süreç ve hizmet arasındaki fark nedir?",o:["Üçü de birbirinin yerine kullanılabilen eş anlamlı terimlerdir","Uygulama kurulu yazılımdır; süreç çalışan örneğidir; hizmet arka planda sistem işlevi sağlayan yönetilen bileşendir","Yalnızca hizmetler arka planda çalışabilir","Süreçler yalnızca arayüzü olan uygulamaları kapsar"],a:1,e:"Uygulama kurulu yazılımı, süreç bellekteki çalışan kopyayı, hizmet ise bağımsız çalışan sistem bileşenini ifade eder."},
+{q:"Bir uygulamanın penceresi kapatıldığında arka plan süreci her zaman sona erer mi?",o:["Evet, pencere kapanınca tüm ilgili süreçler durur","Hayır; bazı uygulamalar pencere kapatıldıktan sonra da arka planda çalışmaya devam edebilir","Evet, ancak yalnızca yönetici uygulamaları için","Hayır, yalnızca sistem hizmetleri arka planda kalır"],a:1,e:"Bazı uygulamalar pencere kapatılsa bile arka planda çalışmaya devam eder. Görev Yöneticisi bu durumu görmeyi sağlar."},
+{q:"Windows Hizmetler konsoluna ulaşmanın kısayol yolu nedir?",o:["Win+R → taskmgr","Win+R → services.msc","Win+R → msconfig","Win+R → winver"],a:1,e:"Win+R → services.msc Hizmetler konsolunu açar."},
+{q:"Bir hizmetin 'Durduruldu' görünmesi ne anlama gelir?",o:["Hizmet bozuk veya silinmiştir","O an çalışmıyor olabilir; başlangıç türü ve bağlam incelenerek değerlendirilmelidir","Hizmet kalıcı olarak devre dışı bırakılmıştır","Sistem yöneticisi hizmeti kilitlemektedir"],a:1,e:"Durdurulmuş bir hizmet her zaman arıza anlamına gelmez. El ile başlatılan bir hizmet yalnızca gerektiğinde çalışır."},
+{q:"Hizmetler konsolunda 'Otomatik (Gecikmeli)' başlangıç türü ne anlama gelir?",o:["Hizmet hiçbir zaman başlamaz","Hizmet sistem başlangıcında başlatılır ancak başlangıç yükünü azaltmak için kısa süre geciktirilir","Hizmet yalnızca kullanıcı isteğiyle başlatılır","Hizmet belirli bir donanım bağlandığında tetiklenir"],a:1,e:"Otomatik (Gecikmeli) başlangıç türü; hizmetin sistem açılışında başlatılacağını, ancak diğer kritik hizmetler yüklendikten sonra devreye gireceğini belirtir."},
+{q:"Bu derste Hizmetler konsolunda yapılmaması gereken işlem hangisidir?",o:["Hizmetin açıklamasını ve durumunu okumak","Hizmet başlatmak, durdurmak veya başlangıç türünü değiştirmek","Hizmet listesini incelemek","Hizmetin adını not almak"],a:1,e:"Bu dersin kapsamı gözlem ve inceleme ile sınırlıdır. Hizmet başlatma veya durdurma kurum onayı ve deneyim gerektirir."},
+{q:"Hizmetlerin birbirine bağımlı olması ne anlama gelir?",o:["Her hizmet tamamen bağımsız çalışır","Bir hizmeti durdurmak, ona bağlı başka hizmetleri veya işlevleri olumsuz etkileyebilir","Hizmetler yalnızca ağ bağlantısına bağımlıdır","Bağımlılık yalnızca güncelleme sürecinde önem taşır"],a:1,e:"Bazı hizmetler çalışabilmek için başka hizmetlere bağımlıdır. Birini durdurmak diğerlerini bozabilir."},
+{q:"Windows 11'de ağ ve internet ayarlarına ulaşmak için hangi yol kullanılır?",o:["Görev Yöneticisi → Ağ sekmesi","Ayarlar → Ağ ve internet","Denetim Masası → Programlar","Olay Görüntüleyicisi → Ağ günlüğü"],a:1,e:"Ayarlar → Ağ ve internet, Wi-Fi, Ethernet, VPN ve gelişmiş ağ seçeneklerine ulaşmanın modern yoludur."},
+{q:"Wi-Fi bağlantısını hızlı ayarlar üzerinden gerçekleştirme adımları nelerdir?",o:["Win+R → ipconfig komutunu çalıştırmak","Görev çubuğu Ağ/Ses/Pil alanından hızlı ayarları açıp Wi-Fi listesinden ağı seçmek","Ayarlar → Bluetooth ve cihazlar yolunu kullanmak","Denetim Masası → Ağ Bağlantıları üzerinden bağlanmak"],a:1,e:"Görev çubuğunun sağındaki Ağ/Ses/Pil simgesine tıklanarak hızlı ayarlar açılır, buradan Wi-Fi listesi görüntülenir ve ağa bağlanılır."},
+{q:"'Ağa bağlıyım ama siteler açılmıyor' sorununda ilk yapılması gereken kontrol nedir?",o:["Ağ sürücüsünü kaldırıp yeniden yüklemek","Başka bir sitenin açılıp açılmadığını kontrol ederek sorunun genel mi yoksa belirli siteye mi özgü olduğunu belirlemek","IP adresini elle değiştirmek","Ethernet kablosunu söküp takarak ağ sıfırlaması yapmak"],a:1,e:"Önce başka bir site veya hizmetin açılıp açılmadığı kontrol edilir. Sorunun genel bağlantı mı yoksa yalnızca belirli bir hizmet mi olduğunu anlamak doğru adımı belirlemeye yardımcı olur."},
+{q:"Bir ağa bağlı olmak, o ağdaki tüm hizmetlere erişilebildiği anlamına gelir mi?",o:["Evet, bağlantı kurulduktan sonra her şeye erişilebilir","Hayır; bağlantı, internet erişimi ve belirli bir hizmete erişim birbirinden bağımsız üç kontrol noktasıdır","Evet, ancak yalnızca özel ağ profilinde","Hayır, yalnızca DNS ayarları doğruysa erişilebilir"],a:1,e:"Fiziksel bağlantı kurulabilir, internet açık olabilir ama ilgili hizmet kapalı veya engelli olabilir. Bu üç durum ayrı ayrı değerlendirilmelidir."},
+{q:"IP adresi nedir?",o:["İşlemcinin seri numarasıdır","Cihazın ağ iletişiminde kullanılan tanımlama adresidir","Disk bölümünün şifreleme anahtarıdır","Wi-Fi ağ parolasının şifrelenmiş halidir"],a:1,e:"IP adresi, cihazın ağ üzerinde diğer cihazlarla iletişim kurabilmesi için kullanılan sayısal tanımlayıcıdır."},
+{q:"DNS'in temel işlevi nedir?",o:["Ağ bant genişliğini artırmak","Alan adlarını ağ adresleriyle eşleştirerek çözümlemeye yardım etmek","Wi-Fi sinyalini güçlendirmek","Disk sürücüsünü ağa bağlamak"],a:1,e:"DNS, 'google.com' gibi okunabilir alan adlarını IP adreslerine çeviren sistemdir. DNS çalışmadığında bağlantı olsa da siteler açılmayabilir."},
+{q:"Windows 11'de Windows sürüm bilgisini hızlı görüntülemek için hangi komut kullanılır?",o:["Win+R → msinfo32","Win+R → winver","Win+R → services.msc","Win+R → ipconfig"],a:1,e:"Win+R → winver Windows sürüm ve derleme numarasını gösteren küçük bir pencere açar. msinfo32 daha ayrıntılı sistem bilgisi verir."},
+{q:"ipconfig komutu terminalde ne gösterir?",o:["Yüklü uygulamaların listesini","Temel ağ yapılandırmasını (IP adresi, ağ geçidi, DNS gibi)","Çalışan süreçlerin listesini","Disk bölümleme bilgilerini"],a:1,e:"ipconfig komutu IP adresi, varsayılan ağ geçidi ve DNS sunucusu gibi temel ağ yapılandırma bilgilerini listeler."},
+{q:"Aygıt Yöneticisi'nin temel amacı nedir?",o:["Yüklü uygulamaları kaldırmak","Donanım bileşenleri ve sürücü durumunu görüntülemek","Disk bölümlerini biçimlendirmek","Hizmetlerin başlangıç türünü değiştirmek"],a:1,e:"Aygıt Yöneticisi; takılı donanımları, sürücü durumunu ve olası uyarıları listeler. Bu derste yalnızca gözlem yapılır."},
+{q:"Olay Görüntüleyicisi'nde bir hata kaydı görülmesi ne anlama gelir?",o:["Sistemi hemen yeniden yükleme gerektirir","Hata kaydı tek başına arıza kanıtı değildir; bağlam ve tekrar sıklığı birlikte değerlendirilmelidir","Zararlı yazılım olduğunun kesin göstergesidir","İlgili hizmet kalıcı olarak devre dışı kalacak demektir"],a:1,e:"Olay Görüntüleyicisi çok sayıda bilgi, uyarı ve hata kaydı tutar. Tek bir hata kaydı bağlamından kopuk değerlendirilemez."},
+{q:"Windows 11'de disk ve bölüm yapısını görüntülemek için hangi araç kullanılır?",o:["Olay Görüntüleyicisi","Disk Yönetimi","Kaynak İzleyicisi","Görev Zamanlayıcı"],a:1,e:"Disk Yönetimi, bağlı diskleri, bölümlerini ve biçimlendirme durumlarını görüntüler."},
+{q:"Depolama temizleme önerileri uygulanmadan önce neden içerikler kontrol edilmelidir?",o:["Temizleme işlemi sistemin yavaşlamasına yol açar","İndirilenler gibi klasörler önemli dosyalar içerebilir; kontrol edilmeden silme veri kaybına yol açabilir","Temizleme yönetici yetkisi gerektirir","Temizleme yalnızca C: sürücüsünde çalışır"],a:1,e:"Ayarlar → Sistem → Depolama'daki temizleme önerileri İndirilenler klasörünü hedefleyebilir. Onaylamadan silmek kayba yol açar."},
+{q:"Bir güvenlik sorununu gidermek amacıyla Windows Güvenliği'ni kapatmak uygun bir yöntem midir?",o:["Evet, geçici olarak kapatmak sorunun kaynağını belirlemeye yardımcı olur","Hayır; güvenliği kapatarak sorun çözmeye çalışmak önerilmez, kurum desteği istenmelidir","Evet, ancak yalnızca kısa süreli ve yönetici yetkisiyle","Evet, yalnızca güncellemeler tamamlandığında"],a:1,e:"Windows Güvenliği'ni devre dışı bırakmak sistemi kötü amaçlı yazılımlara karşı savunmasız bırakır. Sorunlar için kurumsal destek kanalları kullanılmalıdır."},
+{q:"Bilgisayarın model ve işlemci bilgisini görmek için hangi yol kullanılır?",o:["Görev Yöneticisi → Ayrıntılar sekmesi","Ayarlar → Sistem → Hakkında","Denetim Masası → Programlar","Aygıt Yöneticisi → Sistem bileşenleri"],a:1,e:"Ayarlar → Sistem → Hakkında bölümü; Windows sürümü, işlemci, RAM ve cihaz adı gibi temel sistem bilgilerini gösterir."},
+{q:"Bilgisayar yavaşladığında doğru başlangıç yaklaşımı hangisidir?",o:["Windows klasöründen dosya silerek alan açmak","Görev Yöneticisi'nde kaynak kullanımını ve süreleri gözlemleyerek nedeni anlamaya çalışmak","Tüm arka plan hizmetlerini durdurmak","Sistemi hemen fabrika ayarlarına sıfırlamak"],a:1,e:"Önce Görev Yöneticisi açılarak hangi süreç veya uygulamanın kaynak tükettiği gözlemlenir. Neden anlaşılmadan sistem dosyalarına veya hizmetlere müdahale edilmez."}
+];
+
+var cur=0,cor=0,wrn=0,skp=0,done=false;
+
+function render(){
+  var q=Q[cur];
+  document.getElementById('qnum').textContent='S '+(cur+1);
+  document.getElementById('qtext').textContent=q.q;
+  document.getElementById('prog-lbl').textContent=(cur+1)+' / '+Q.length;
+  document.getElementById('prog').style.width=((cur+1)/Q.length*100)+'%';
+  var d=document.getElementById('opts');
+  d.innerHTML='';
+  ['A','B','C','D'].forEach(function(l,i){
+    var b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML='<span class="opt-ltr">'+l+'</span><span>'+q.o[i]+'</span>';
+    b.onclick=function(){sel(i);};
+    d.appendChild(b);
+  });
+  var fb=document.getElementById('fb');
+  fb.className='feedback';fb.textContent='';
+  document.getElementById('next').disabled=true;
+  document.getElementById('skip').disabled=false;
+  done=false;
+}
+
+function sel(idx){
+  if(done)return;
+  done=true;
+  var q=Q[cur];
+  var btns=document.querySelectorAll('.opt');
+  btns.forEach(function(b,i){
+    b.disabled=true;
+    if(i===q.a)b.classList.add('correct');
+    else if(i===idx)b.classList.add('wrong');
+  });
+  var fb=document.getElementById('fb');
+  if(idx===q.a){
+    cor++;
+    fb.className='feedback fb-ok show';
+    fb.textContent='✓ Doğru! '+q.e;
+  }else{
+    wrn++;
+    fb.className='feedback fb-err show';
+    fb.textContent='✗ Yanlış. Doğru cevap: '+q.o[q.a]+'. '+q.e;
+  }
+  document.getElementById('skip').disabled=true;
+  document.getElementById('next').disabled=false;
+  document.getElementById('hdr-c').textContent=cor;
+  document.getElementById('hdr-w').textContent=wrn;
+}
+
+document.getElementById('next').onclick=function(){
+  cur++;
+  if(cur>=Q.length)showRes();else render();
+};
+document.getElementById('skip').onclick=function(){
+  if(done)return;
+  skp++;cur++;
+  if(cur>=Q.length)showRes();else render();
+};
+
+function showRes(){
+  document.getElementById('quiz').style.display='none';
+  document.getElementById('results').style.display='block';
+  var pct=Math.round(cor/Q.length*100);
+  document.getElementById('rc').textContent=cor;
+  document.getElementById('rw').textContent=wrn;
+  document.getElementById('rs').textContent=skp;
+  var t,m;
+  if(pct>=90){t='Mükemmel! 🎉';m='Tebrikler! Windows 11 temel araçlarını çok iyi kavradınız.';}
+  else if(pct>=70){t='İyi İş! 👏';m='Konuyu genel olarak iyi kavramışsınız. Eksik bölümleri gözden geçirin.';}
+  else if(pct>=50){t='Geçer Puan ✓';m='Bazı bölümleri pekiştirmeniz önerilir.';}
+  else{t='Tekrar Çalışın 📚';m='Konuyu yeniden gözden geçirip tekrar deneyin.';}
+  document.getElementById('res-title').textContent=t;
+  document.getElementById('res-msg').textContent=m+' ('+pct+'%)';
+}
+
+function restart(){
+  cur=0;cor=0;wrn=0;skp=0;done=false;
+  document.getElementById('results').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  document.getElementById('hdr-c').textContent=0;
+  document.getElementById('hdr-w').textContent=0;
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
